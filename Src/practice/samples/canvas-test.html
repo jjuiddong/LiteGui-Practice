@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<title>Canvas Test</title>
+	<style type='text/css'></style>
+	<link rel="stylesheet" type="text/css" href="../build/litegui.css">
+	<script type="text/javascript" src="../external/jscolor/jscolor.js"></script>
+	<script type="text/javascript" src="../build/litegui.js"></script>
+</title>
+</head>
+<body>
+
+	<script type="text/javascript">
+		LiteGUI.init();
+
+		var mainmenu = new LiteGUI.Menubar("mainmenubar");
+		LiteGUI.add( mainmenu );
+		mainmenu.add("file/new");
+		mainmenu.add("file/open");
+		mainmenu.add("file/save");
+		mainmenu.add("edit/undo");
+		mainmenu.add("edit/redo");
+		mainmenu.add("edit/");
+		mainmenu.add("edit/copy", { callback: function(){ console.log("COPY"); } });
+		mainmenu.add("edit/paste");
+		mainmenu.add("edit/clear");
+			
+		mainmenu.add("view/bottom panel", { callback: function() { } });
+		mainmenu.add("view/fixed size", { callback: function() { LiteGUI.setWindowSize(1000,600); } });
+		mainmenu.add("view/");
+		mainmenu.add("view/side panel", { callback: function() { } });
+		mainmenu.add("view/maximize", { callback: function() { LiteGUI.setWindowSize(); } });
+
+		var mainarea = new LiteGUI.Area("mainarea",{content_id:"canvasarea"
+		, height: "calc( 100% - 20px )"
+		, autoresize: true, inmediateResize: true});
+		LiteGUI.add( mainarea );
+
+		//create main canvas to test redraw
+		var canvas = document.createElement("canvas");
+		canvas.width = canvas.height = 100;
+		canvas.times = 0;
+		canvas.redraw = function() {
+			var rect = canvas.parentNode.getClientRects()[0];
+			canvas.width = rect.width;
+			canvas.height = rect.height;
+			var ctx = canvas.getContext("2d");
+			ctx.clearRect(0,0,this.width,this.height);
+			ctx.lineWidth = 1;
+			ctx.strokeStyle = "#AAF";
+			ctx.strokeRect(10.5,10.5,this.width-20,this.height-20);
+			ctx.strokeText("Times: " + this.times,20.5,30.5);
+			this.times += 1;
+		}
+		mainarea.onresize = function() { canvas.redraw(); };
+		mainarea.content.appendChild(canvas);
+		canvas.redraw();
+	</script>
+
+
+</body>
+</html>
