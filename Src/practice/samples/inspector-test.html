@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<title>Inspector Test</title>
+	<style type='text/css'></style>
+	<link rel="stylesheet" type="text/css" href="../build/litegui.css">
+	<script type="text/javascript" src="../external/jscolor/jscolor.js"></script>
+	<script type="text/javascript" src="../build/litegui.js"></script>
+</title>
+</head>
+<body>
+
+	<script type="text/javascript">
+		LiteGUI.init();
+
+		 var mainarea = new LiteGUI.Area("mainarea",{content_id:"canvasarea", autoresize: true, inmediateResize: true});
+		 mainarea.split("horizontal",[300,null], true);
+		LiteGUI.add( mainarea );
+
+		mainarea.getSection(1).split("vertical", null, true);
+
+		// mainpanel, main widgets
+		var mainpanel = new LiteGUI.Panel("mainpanel",{title:"Main Panel"});
+		mainarea.getSection(1).getSection(0).add( mainpanel );
+		var mwidgets = new LiteGUI.Inspector();
+		var s1 = mwidgets.addSlider("slider",10,{min:1,max:100,step:1});
+		var v2 = mwidgets.addVector2("vector2",[10,20], {min:0});
+		var v3 = mwidgets.addVector3("vector3",[10,20,30], {min:0});
+		var v4 = mwidgets.addVector4("vector4",[0.1,0.2,0.3,0.4], {min:0});
+		mainpanel.add( mwidgets );
+
+		var side_panel = new LiteGUI.Panel("sidepanel",{title:"Side Panel"});
+		mainarea.getSection(0).add( side_panel );
+
+		// side panel, side widgets
+		var swidgets = new LiteGUI.Inspector();
+		swidgets.addButton("Alert","Show", function() { LiteGUI.alert("foo"); } );
+		swidgets.addSlider("slider",10,{min:1,max:100,step:1, callback:(value => {
+			s1.setValue(value);
+		})});
+		swidgets.addVector2("vector2",[10,20], {min:0, callback:(value => {
+			v2.setValue(value);
+		})});
+		swidgets.addVector3("vector3",[10,20,30], {min:0, callback: (value) => {
+			v3.setValue(value);
+		}});
+		swidgets.addVector4("vector4",[0.1,0.2,0.3,0.4], {min:0, callback:(value => {
+			v4.setValue(value);
+		})});
+		side_panel.add( swidgets );
+
+		createBottomPanel(mainarea);
+
+		function createBottomPanel(mainarea) 
+		{
+			// bottom panel, bottom widgets
+			var bottompanel = new LiteGUI.Panel("bottompanel",{title:"Bottom Panel"});
+			mainarea.getSection(1).getSection(1).add( bottompanel );
+			var widgets = new LiteGUI.Inspector();
+			bottompanel.add( widgets );
+
+			//tree
+			var mytree = { id: "Rootnode", 
+					children: [
+						{ id: "Child1" },
+						{ id: "Child2", children: [
+							{ id: "SubChild1" },
+							{ id: "SubChild2" },
+							{ id: "SubChild3" },
+							{ id: "SubChild4" }
+						]},
+						{ id: "Child3" },
+					]};
+
+			var litetree = new LiteGUI.Tree( mytree, { allow_rename: true });
+			LiteGUI.bind( litetree.root, "item_selected", function(e) {
+				console.log("Node selected: ", e.detail); 
+			});
+			litetree.insertItem( {id:"FOO"}, "Child2", 2 );
+			//litetree.removeItem( "SubChild1" );
+			//litetree.moveItem( "FOO", "Child3" );
+			litetree.insertItem( {id:"MAX"}, "Child1" );
+			widgets.root.appendChild( litetree.root );
+			widgets.addSeparator();
+			widgets.addSection("Text stuff");
+			widgets.addString("string","foo");
+			widgets.addStringButton("string button","foo", { callback_button: function(v) { console.log("Button: " + v); } });
+			widgets.addTextarea(null,"a really long silly text", {height: 100});
+			var w = widgets.addCombo("combo","javi",{values:["foo","faa","super largo texto que no cabe entero","javi","nada"], callback: function(name) { console.log("Combo selected: " + name); }});
+			widgets.addComboButtons("combobuttons","javi",{values:["foo","faa","javi","nada"], callback: function(name) { console.log("Combo button selected: " + name); }});
+			widgets.addTags("tags","pop",{values:["rap","blues","pop","jazz"], callback: function(tags) { console.log("Tag added: " + JSON.stringify(tags) ); }});
+			widgets.addSection("Other widgets");
+			widgets.addCheckbox("checkbox",true,{callback: function(value) { console.log("Checkbox pressed: " + value); } });
+			widgets.addButton("Serialize","Save",{callback: function(name) { console.log("Button pressed: " + name); } });
+			widgets.addButtons("Serialize",["Save","Load","New"],{callback: function(name) { console.log("Button pressed: " + name); } });
+			widgets.addButton(null,"Save");
+			widgets.addSeparator();
+			widgets.addColor("Color",[0,1,0]);
+			widgets.addPad("Pad",[0.5,0.5], function(v){ console.log(v); });
+			widgets.addFile("File","test.png");
+			widgets.addLine("Line",[[0.5,1],[0.75,0.25]],{defaulty:0,width:120}); 
+
+		}
+
+	</script>
+
+
+</body>
+</html>
