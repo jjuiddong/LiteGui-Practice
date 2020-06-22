@@ -12,4 +12,6 @@ Web UI Library litegui.js practice with JavaScript and HTML
     - <img src="https://github.com/jjuiddong/LiteGui-Practice/blob/master/Doc/inspector-test.jpg?raw=true" width="200px"/>
   - Dialog Test
     - <img src="https://github.com/jjuiddong/LiteGui-Practice/blob/master/Doc/dialog-test.jpg?raw=true" width="200px"/>
+  - Canvas Test
+    - <img src="https://github.com/jjuiddong/LiteGui-Practice/blob/master/Doc/canvas-test.jpg?raw=true" width="200px"/>
     
