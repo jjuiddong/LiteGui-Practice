@@ -1,5 +1,5 @@
 # LiteGui-Practice
-litegui.js practice
+litegui.js practice with JavaScript and HTML
 
 - Reference Library
   - https://github.com/jagenjo/litegui.js
