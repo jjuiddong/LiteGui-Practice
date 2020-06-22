@@ -3,3 +3,7 @@ litegui.js practice
 
 - Reference Code
   - https://github.com/jagenjo/litegui.js
+- Practice Samples
+  - Area Test
+
+    
