@@ -1,7 +1,7 @@
 # LiteGui-Practice
 litegui.js practice
 
-- Reference Code
+- Reference Library
   - https://github.com/jagenjo/litegui.js
 - Practice Samples
   - Area Test
