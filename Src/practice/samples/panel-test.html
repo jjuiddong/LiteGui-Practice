@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<title>Panel Test</title>
+	<style type='text/css'></style>
+	<link rel="stylesheet" type="text/css" href="../build/litegui.css">
+	<script type="text/javascript" src="../external/jscolor/jscolor.js"></script>
+	<script type="text/javascript" src="../build/litegui.js"></script>
+</title>
+</head>
+<body>
+
+	<script type="text/javascript">
+		LiteGUI.init();
+
+		 var mainarea = new LiteGUI.Area("mainarea",{content_id:"canvasarea", autoresize: true, inmediateResize: true});
+		 mainarea.split("horizontal",[300,null], true);
+		LiteGUI.add( mainarea );
+
+		mainarea.getSection(1).split("vertical",[null,200], true);	
+
+		var mainpanel = new LiteGUI.Panel("mainpanel",{title:"Main Panel"});
+		mainarea.getSection(1).getSection(0).add( mainpanel );
+		var mwidgets = new LiteGUI.Inspector();
+		var s1 = mwidgets.addSlider("slider",10,{min:1,max:100,step:1});
+		var v2 = mwidgets.addVector2("vector2",[10,20], {min:0});
+		var v3 = mwidgets.addVector3("vector3",[10,20,30], {min:0});
+		var v4 = mwidgets.addVector4("vector4",[0.1,0.2,0.3,0.4], {min:0});
+		mainpanel.add( mwidgets );
+
+
+		var side_panel = new LiteGUI.Panel("sidepanel",{title:"Side Panel"});
+		mainarea.getSection(0).add( side_panel );
+
+		var swidgets = new LiteGUI.Inspector();
+		swidgets.addButton("Alert","Show", function() { LiteGUI.alert("foo"); } );
+		swidgets.addSlider("slider",10,{min:1,max:100,step:1, callback:(value => {
+			s1.setValue(value);
+		})});
+		swidgets.addVector2("vector2",[10,20], {min:0, callback:(value => {
+			v2.setValue(value);
+		})});
+		swidgets.addVector3("vector3",[10,20,30], {min:0, callback: (value) => {
+			v3.setValue(value);
+		}});
+		swidgets.addVector4("vector4",[0.1,0.2,0.3,0.4], {min:0, callback:(value => {
+			v4.setValue(value);
+		})});
+		side_panel.add( swidgets );
+
+	</script>
+
+
+</body>
+</html>
