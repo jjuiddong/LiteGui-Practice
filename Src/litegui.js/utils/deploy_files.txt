@@ -1,0 +1,12 @@
+../src/core.js
+../src/widgets.js
+../src/console.js
+../src/area.js
+../src/menubar.js
+../src/tabs.js
+../src/dragger.js
+../src/tree.js
+../src/panel.js
+../src/dialog.js
+../src/table.js
+../src/inspector.js
