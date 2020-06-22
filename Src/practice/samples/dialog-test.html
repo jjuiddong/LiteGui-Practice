@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<title>Dialog Test</title>
+	<style type='text/css'></style>
+	<link rel="stylesheet" type="text/css" href="../build/litegui.css">
+	<script type="text/javascript" src="../external/jscolor/jscolor.js"></script>
+	<script type="text/javascript" src="../build/litegui.js"></script>
+</title>
+</head>
+<body>
+
+	<script type="text/javascript">
+		LiteGUI.init();
+
+		 var mainarea = new LiteGUI.Area("mainarea",{content_id:"canvasarea", autoresize: true, inmediateResize: true});
+		LiteGUI.add( mainarea );
+
+		var dialog1 = createDialog();
+		var dialog2 = createTableDialog();
+		var dialog3 = createComplexListDialog();
+
+		function createDialog() 
+		{
+			//test floating panel
+			var name = "Dialog_" + ((Math.random() * 100)>>0);
+			var dialog = new LiteGUI.Dialog({ id: name, title:name, close: true, minimize: true, width: 300, scroll: true, resizable:true, draggable: true, detachable: true });
+			dialog.show('fade');
+
+			//test menu in panel
+			var minimenu = new LiteGUI.Menubar("minimenu");
+			minimenu.add("file/new");
+			minimenu.add("center", {onclick: function() { dialog.center() } });
+			minimenu.attachToPanel(dialog);
+
+			var widgets = new LiteGUI.Inspector();
+			widgets.addButton("button","Update", { callback: function() { updateSidePanel(); } });
+			widgets.addString("string","foo");
+			widgets.addNumber("number",10, {min:0});
+			widgets.addTree("tree",{ person: "javi", info: { age: 32, location: "barcelona" }, role: "worker"} );
+
+			widgets.addSeparator();
+			widgets.addVector2("vector2",[10,20], {min:0});
+			widgets.addVector3("vector3",[10,20,30], {min:0});
+			widgets.addSeparator();
+			widgets.addTextarea("textarea","a really long silly text");
+			widgets.addInfo("info","a really long silly text");
+			widgets.addSlider("slider",10,{min:1,max:100,step:1});
+			widgets.addCheckbox("checkbox",true);
+			widgets.addCheckbox("checkbox2",false);
+			widgets.addCombo("combo","javi",{values:["foo","faa","super largo texto que no cabe entero","javi","nada"]});
+			widgets.addButtons("Serialize",["Save","Load","New"]);
+			widgets.addButton(null,"Save");
+			dialog.add(widgets);
+
+			return dialog;
+		}
+
+		function createTableDialog()
+		{
+			var dialog = new LiteGUI.Dialog( { title:"Table dialog", close: true, minimize: true
+			, width: 300, scroll: true, resizable:true, draggable: true} );
+			dialog.show();
+			dialog.setPosition( 200,200 );
+			dialog.addButton("Randomize", inner );
+
+			var table = new LiteGUI.Table({scrollable:true});
+			dialog.add( table );
+
+			table.setColumns(["Name",{ name: "Age", width: 50 },"Address"]);
+
+			var data = [];
+
+			for(var i = 0; i < 10; ++i)
+				data.push({
+						name: randomName(),
+						age: 30,
+						address: "none"
+					});
+
+			inner();
+
+			function randomName(){
+				var names = ["Phil","Smith","Gregory","Martin","James","Coleman","Jerry","Helen","Mary"];
+				var name = [];
+				name.push( names[Math.floor(Math.random()*names.length)] );
+				name.push( names[Math.floor(Math.random()*names.length)] );
+				return name.join(" ");
+			}
+
+			function inner()
+			{
+				for(var i in data)
+					data[i].age = (Math.random() * 100)|0;
+
+				table.setRows( data, true );
+			}
+		}
+
+		function createComplexListDialog()
+		{
+			var dialog = new LiteGUI.Dialog( { title:"Complex List", close: true, minimize: true
+				, width: 300, height: 400, scroll: true, resizable:true, draggable: true} );
+			dialog.show();
+			dialog.setPosition( 600,200 );
+
+			var list = new LiteGUI.ComplexList({height: "100%"});
+			dialog.add( list );
+
+			list.addTitle("Example of title");
+			for(var i = 0; i < 10; ++i)
+				var elem = list.addItem({},"Example", Math.random()>0.5, true);
+			list.addTitle("Example of title");
+			for(var i = 0; i < 10; ++i)
+				list.addItem({},"More items", Math.random()>0.5, true);
+			list.addHTML("+ click me");
+
+			return dialog;
+		}
+
+	</script>
+
+
+</body>
+</html>
