@@ -3,9 +3,7 @@
 // Attribute : Position
 //
 
-Shader = {};
-
-Shader.Pos = {
+PosShader = {
 
   vertexShader: [
     "attribute vec3 aVertexPosition;",

@@ -127,7 +127,7 @@
 		{
 			// load pos shader
 			var shaderProgram = gl.createProgram();
-			ShaderHelper.loadShader(gl, shaderProgram, Shader.Pos);
+			ShaderHelper.loadShader(gl, shaderProgram, PosShader);
 
 			gl.useProgram(shaderProgram);
 			_posShader.program = shaderProgram;
