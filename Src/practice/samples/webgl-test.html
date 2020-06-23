@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<title>WebGL Test</title>
+	<style type='text/css'></style>
+	<link rel="stylesheet" type="text/css" href="../build/litegui.css">
+	<script type="text/javascript" src="../external/jscolor/jscolor.js"></script>
+	<script type="text/javascript" src="../external/glMatrix.js"></script>
+	<script type="text/javascript" src="../build/litegui.js"></script>
+    <script type="text/javascript" src="../libs/webgl-helper.js"></script>
+    <script type="text/javascript" src="../libs/shader-helper.js"></script>
+	<script type="text/javascript" src="../shader/pos.js"></script>	
+</title>
+</head>
+<body onload="startup();">
+
+	<script type="text/javascript">
+		LiteGUI.init();
+
+		var gl = null;
+        var _world = mat4.create();
+        var _view = mat4.create();
+		var _proj = mat4.create();
+		var _ground = {};
+		var _posShader = {};
+
+		var _mainmenu = new LiteGUI.Menubar("mainmenubar");
+		LiteGUI.add( _mainmenu );
+		_mainmenu.add("File/new");
+		_mainmenu.add("Edit/new");
+		_mainmenu.add("View/new");
+		_mainmenu.add("Build/new");
+		_mainmenu.add("Run/new");
+		_mainmenu.add("Window/new");
+		_mainmenu.add("Help/new");
+
+		var _mainarea = new LiteGUI.Area("_mainarea",{content_id:"canvasarea"
+			, height: "calc( 100% - 20px )"
+			, autoresize: true, inmediateResize: true});
+		_mainarea.split("horizontal",[200,null], true);
+		LiteGUI.add( _mainarea );
+
+		_mainarea.getSection(1).split("vertical",[null,200], true);
+
+		var _sidepanel = new LiteGUI.Panel("side panel",{title:"Side Panel"});
+		_mainarea.getSection(0).add( _sidepanel );
+
+		var _bottompanel = new LiteGUI.Panel("bottom panel",{title:"Bottom Panel"});
+		_mainarea.getSection(1).getSection(1).add( _bottompanel );
+
+		//create main canvas to test redraw
+		var _canvas = document.createElement("canvas");
+		_canvas.width = _canvas.height = 100;
+		_canvas.times = 0;
+		_canvas.redraw = function() {
+			var rect = _canvas.parentNode.getClientRects()[0];
+			_canvas.width = rect.width;
+			_canvas.height = rect.height;
+			// var ctx = _canvas.getContext("2d");
+			// ctx.clearRect(0,0,rect.width,rect.height);
+			// ctx.lineWidth = 1;
+			// ctx.strokeStyle = "#AAF";
+			// ctx.strokeRect(10.5,10.5,rect.width-20,rect.height-20);
+			// ctx.strokeText("Times: " + this.times,20.5,30.5);
+			// this.times += 1;
+
+			if (gl)
+			{
+				gl.viewport(0, 0, rect.width, rect.height);
+				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+				mat4.perspective(60, rect.width / rect.height, 1, 1000.0, _proj);
+				mat4.identity(_view);
+				mat4.lookAt([50, 28, -35], [50, 0, 140], [0, 1, 0], _view);
+				mat4.identity(_world);
+	
+				renderGround();
+			}
+		}
+		_mainarea.getSection(1).getSection(0).onresize = function() { _canvas.redraw(); };
+		_mainarea.getSection(1).getSection(0).content.appendChild(_canvas);
+		_canvas.redraw();
+
+		function createGround() 
+		{
+			_ground.pos = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, _ground.pos);
+
+			var cnt = 150;
+			var w = 150.0;
+			var h = 150.0;
+
+			var buff = [];
+			for (var i=0; i<cnt; ++i)
+			{
+				// vertex x,y,z
+				buff.push(0.0);
+				buff.push(0.0);
+				buff.push(i);
+
+				// vertex x,y,z
+				buff.push(w);
+				buff.push(0.0);
+				buff.push(i);
+			}
+
+			for (var i=0; i<cnt; ++i)
+			{
+				// vertex x,y,z
+				buff.push(i);
+				buff.push(0);
+				buff.push(0);
+
+				// vertex x,y,z
+				buff.push(i);
+				buff.push(0);
+				buff.push(h);
+			}
+
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buff), gl.STATIC_DRAW);
+			_ground.itemSize = 3;
+			_ground.numItems = cnt*4;
+		}
+
+		function createShaders() 
+		{
+			// load pos shader
+			var shaderProgram = gl.createProgram();
+			ShaderHelper.loadShader(gl, shaderProgram, Shader.Pos);
+
+			gl.useProgram(shaderProgram);
+			_posShader.program = shaderProgram;
+			_posShader.pos = gl.getAttribLocation(shaderProgram, "aVertexPosition"); 
+			_posShader.mWorld = gl.getUniformLocation(shaderProgram, "mWorld");
+			_posShader.mView = gl.getUniformLocation(shaderProgram, "mView");
+			_posShader.mProj = gl.getUniformLocation(shaderProgram, "mProj");
+		}
+		
+		function renderGround()
+		{
+			gl.useProgram(_posShader.program);
+
+			mat4.identity(_world);
+			mat4.translate(_world, [-25,0,-50]);
+			gl.uniformMatrix4fv(_posShader.mWorld, false, _world);
+			gl.uniformMatrix4fv(_posShader.mView, false, _view);
+			gl.uniformMatrix4fv(_posShader.mProj, false, _proj);
+			gl.bindBuffer(gl.ARRAY_BUFFER, _ground.pos);
+			gl.vertexAttribPointer(_posShader.pos, _ground.itemSize, gl.FLOAT, false, 0, 0); 
+			gl.enableVertexAttribArray(_posShader.pos);
+			gl.drawArrays(gl.LINES, 0, _ground.numItems);
+		}
+
+		function startup() 
+		{
+			gl = GLHelper.create(_canvas);
+			createShaders();
+			createGround();
+			_canvas.redraw();
+		}
+
+	</script>
+
+</body>
+</html>
